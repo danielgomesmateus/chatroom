@@ -1,6 +1,8 @@
 app = require('./config/server.js')();
 
-app.listen('8000', function() {
+var server = app.listen('8000', function() {
 
 	console.log("Servidor NODEJS - localhost:8000");
 });
+
+require('socket.io').listen(server);
