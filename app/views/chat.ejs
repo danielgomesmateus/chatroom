@@ -72,31 +72,8 @@
 		<div class="container">
             <div class="row conversa" id="conversa">
 				<div class="col-md-1"></div>
-				<div class="col-md-10">
-					<div class="dialogo">
-						<h4>Jorge</h4>
-						<p>Fala José, blz cara?</p>
-					</div>
+				<div class="col-md-10" id="conversations">
 					
-					<div class="dialogo">
-						<h4>José</h4>
-						<p>Opa, tudo certo!</p>
-					</div>
-					
-					<div class="dialogo">
-						<h4>Jorge</h4>
-						<p>Vai estudar mais sobre NodeJS hoje?</p>
-					</div>
-					
-					<div class="dialogo">
-						<h4>José</h4>
-						<p>Sim, com certeza. Vamos trabalhar com Websockets hoje, o assunto é bem interessante</p>
-					</div>
-					
-					<div class="dialogo">
-						<h4>Jorge</h4>
-						<p>Show de bola, comunicação bi-direcional em páginas ou sistemas web é muito bacana mesmo</p>
-					</div>
 				</div>
 				<div class="col-md-1"></div>
                 
@@ -104,21 +81,8 @@
 			
 			<div class="row participantes" id="participantes" style="display:none">
 				<div class="col-md-1"></div>
-				<div class="col-md-10">
-					<span class="participante">
-						<img src="images/ico_usuario.png" />
-						Jorge
-					</span>
-					
-					<span class="participante">
-						<img src="images/ico_usuario.png" />
-						José
-					</span>
-					
-					<span class="participante">
-						<img src="images/ico_usuario.png" />
-						Fernando
-					</span>
+				<div class="col-md-10" id="users">				
+
 				</div>
 				<div class="col-md-1"></div>
                 
@@ -128,21 +92,79 @@
 		<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
 			<div class="container">
 				<div class="panel-body campo-mensagem">
-					<form>
-						<div class="col-md-12">
-							<div class="input-group">
-								<input type="text" class="form-control" placeholder="Mensagem">
-								<span class="input-group-btn">
-									<button class="btn btn-default" type="button">></button>
-								</span>
-							</div>
+					<div class="col-md-12">
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="Mensagem" id="message">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button" id="send_message">></button>
+							</span>
 						</div>
-					</form>
+					</div>
 				</div>
 			</div>
 		</nav>		
 		
+		<input type="hidden" id="name" value="<%= name %>">
+		<input type="hidden" id="user_send" value="0">
+
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-		
+
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+			var socket = io('http://localhost:8000');
+
+			socket.on('msgUser', function(data) {
+
+				var html = "";
+				
+				html = '<div class="dialogo">';
+				html += '<h4>' + data.username + '</h4>';
+				html += '<p>' + data.msg + '</p>';
+				html += '</div>';
+
+				$('#conversations').append(html);
+			});
+
+			socket.on('receiveMessage', function(data) {
+
+				var html = "";
+				
+				html = '<div class="dialogo">';
+				html += '<h4>' + data.username + '</h4>';
+				html += '<p>' + data.msg + '</p>';
+				html += '</div>';
+
+				$('#conversations').append(html);	
+				$('#message').val("");	
+
+				window.scrollTo(0, document.body.scrollHeight);
+			});
+
+			socket.on('users', function(data) {
+
+				var html = "";
+				
+				html = '<p class="participante">';
+				html = '<img src="img/ico_usuario.png">'
+				html += data.username;
+				html += '</p>';
+
+				$('#users').append(html);
+			});
+
+			$('#send_message').click(function() {
+
+				socket.emit(
+					'sendMessage',
+					{
+						'username' : $('#name').val(), 
+						'msg' : $('#message').val(), 
+						'user_send' : $('#user_send').val()
+					}
+				);
+
+				$('#user_send').val(1);
+			});
+		</script>		
 	</body>
 </html>
