@@ -1,9 +1,5 @@
 # chatroom
 
-
-
-# newsportal
-
 Sistema simples de chat com várias pessoas utilizando NODEJS. Foi utilizado o Socket.io para a execução do projeto. Projeto desenvolvido com base no curso "Curso Completo do Desenvolvedor NodeJS e MongoDB".
 
 https://www.udemy.com/curso-completo-do-desenvolvedor-nodejs
